@@ -1,0 +1,100 @@
+{%- macro get_class(result) -%}
+{% if result == 20 %}
+    {{- "warning" -}}
+{% elseif result == -1 %}
+    {{- "info" -}}
+{% elseif result == 99 %}
+    {{- "danger" -}}
+{% elseif result == 0 %}
+    {{- "success" -}}
+{% else %}
+    {{- "warning" -}}
+{% endif %}
+{%- endmacro -%}
+
+{% macro progressBar(suiteStatistics) %}
+
+    {% set nTotal = suiteStatistics['total'] %}
+
+    {% if nTotal > 0 %}
+
+        {% set progressBarValues = {
+            'success': suiteStatistics['passed'] * 100 / nTotal, 
+            'danger' : suiteStatistics['failed'] * 100 / nTotal,
+            'warning': (suiteStatistics['pending'] + suiteStatistics['skipped'] + suiteStatistics['undefined']) * 100 / nTotal
+        } %}
+
+    {% endif %}
+
+    <div class="progress" >
+        <div class="progress-bar progress-bar-success" style="width:{{ progressBarValues['success']|default(0) }}%"><span class="sr-only"></span></div>
+        <div class="progress-bar progress-bar-warning progress-bar-striped"  style="width:{{ progressBarValues['warning']|default(0) }}%"><span class="sr-only"></span></div>
+        <div class="progress-bar progress-bar-danger"  style="width:{{ progressBarValues['danger']|default(0) }}%"><span class="sr-only"></span></div>
+    </div>
+{% endmacro %}
+
+{% macro soloProgressBar(result) %}
+    {% import _self as helper %}
+
+    <div class="progress">
+        <div class="progress-bar {{ "progress-bar-#{helper.get_class(result)}" }}" style="width:100%"><span class="sr-only"></span></div>
+    </div>
+
+{% endmacro %}
+
+{% macro exception_show_details(exception, id) %}
+
+    <tr class="collapse" exception="{{ id }}">
+        <td>
+            <div class="collapse" exception="{{ id }}">
+                <h4>
+                    Exception Details
+                    <a data-toggle="modal" data-target="[modalid={{id}}]">
+
+                        <span class="glyphicon glyphicon-eye-open clickable" ></span>
+                    </a>
+                </h4>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <span style="color: #f66;" >{{ exception.message }}</span>
+                        <p>{{ exception.file }}:{{ exception.line }}</p>
+                    </div>
+                </div>
+                <p><a href="#">Response</a></p>
+                <p><a href="#">Selenium log</a></p>
+                <p><a href="#">Page Screenshot</a></p>
+            </div>
+        </td>
+    </tr>
+
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div class="modal fade" modalid="{{id}}" tabindex="-1" role="dialog" aria-labelledby="{{id}}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="margin: 60px auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="{{id}}">Full Exception</h4>
+                </div>
+                <div class="modal-body">
+                    {{ exception|nl2br }}                  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endmacro %}
+
+{% macro show_state_icon(results) %}
+    {% if results['failed'] > 0 %}
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+    {% elseif results['undefined'] > 0 or results['pending'] > 0 %}
+        <span class="glyphicon glyphicon-warning-sign"></span>
+    {% endif %}
+{% endmacro %}

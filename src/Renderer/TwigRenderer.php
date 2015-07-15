@@ -37,7 +37,7 @@ class TwigRenderer
         $templatePath = dirname(__FILE__) . '/../../templates';
         $loader = new Twig_Loader_Filesystem($templatePath);
         $twig = new Twig_Environment($loader, array());
-        $print = $twig->render('index.html.twig',
+        $print = $twig->render('alternative/alternative_base.twig',
             array(
                 'suites' => $obj->getSuites(),
                 'failedScenarios' => $obj->getFailedScenarios(),

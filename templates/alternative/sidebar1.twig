@@ -1,0 +1,49 @@
+<table class="table table-bordered table-condensed">
+    <thead></thead>
+    <tbody>
+        {% for suite in suites %}
+            {% set suiteId = loop.index %}
+            {% set feature_results = suite.getFeaturesResults()  %}
+            <tr>
+                <td class="suite accordion-toggle" data-toggle="collapse" data-target=".feature[class~=collapse][suite={{ suiteId }}]">
+                    {{ helper.show_state_icon(feature_results) }}
+                    {{ suite.name|capitalize }}
+
+                    <div class="progress" >
+                        <div class="progress-bar progress-bar-success" style="width:0%"><span class="sr-only"></span></div>
+                        <div class="progress-bar progress-bar-warning progress-bar-striped"  style="width:100%"><span class="sr-only"></span></div>
+                        <div class="progress-bar progress-bar-danger"  style="width:0%"><span class="sr-only"></span></div>
+                    </div>
+
+                </td>
+            </tr>
+            <tr suite="{{ suiteId }}" class="feature collapse">
+                <td style="padding-left: 15px;">
+                    <div suite="{{ suiteId }}" class="feature collapse">
+                        <table class="table-condensed table table-hover"> 
+                            {% for feature in suite.features %}
+                                {% set suiteId = loop.parent.loop.index %}
+                                {% set featureId = loop.index %}
+                                {% set scenario_results = feature.getScenariosResults()  %}
+
+                                <tr class="feature" suite="{{ suiteId }}" suitename="{{ suite.name|capitalize }}" feature="{{ featureId }}">
+                                    <td>
+                                        {{ helper.show_state_icon(scenario_results) }}
+                                        {{ feature.name|capitalize }}
+
+                                        <div class="progress" >
+                                            <div class="progress-bar progress-bar-success" style="width:{{ feature.getPercentPassed }}%"><span class="sr-only"></span></div>
+                                            <div class="progress-bar progress-bar-warning progress-bar-striped"  style="width:0%"><span class="sr-only"></span></div>
+                                            <div class="progress-bar progress-bar-danger"  style="width:{{ feature.getPercentFailed }}%"><span class="sr-only"></span></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

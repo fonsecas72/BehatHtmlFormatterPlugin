@@ -1,0 +1,40 @@
+{% import "macro_helper.twig" as helper %}
+<html>
+    {% include "base_head.twig"  %}
+    <body>
+        {% include 'navbar.twig' %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="sidebar_super">
+                    <ul class="nav nav-sidebar">
+                        <li><a href="#">Overview</a></li>
+                        <li class="active"><a href="#">Features</a></li>
+                    </ul>
+                </div>
+
+                <div class="main">
+                    <button type="button" class="center-block close" aria-label="Close"><span style="font-size: 50px;"aria-hidden="true">&times;</span></button>
+                    <h1 class="page-header">Features</h1>
+
+                    <div class="my_sidebar" id="sidebar1" >
+                        <h5 class="sidebar_desc" >Suites / Features</h5>
+                        <h3 class="suite_title"></h3>
+                        {% include 'sidebar1.twig' with { 'suites': suites } %}
+                    </div>
+
+                    <div class="my_sidebar" id="sidebar2"  >
+                        <h5 class="sidebar_desc" >Scenarios</h5>
+                        <h3 class="feature_title"></h3>
+                        {% include 'sidebar2.twig' with { 'suites': suites } %}
+                    </div>
+
+                    <div class="my_sidebar" id="sidebar3"  >
+                        <h5 class="sidebar_desc" >Steps</h5>
+                        <h3 class="scenario_title"></h3>
+                        {% include 'sidebar3.twig' with { 'suites': suites } %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

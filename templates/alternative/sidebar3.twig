@@ -1,0 +1,156 @@
+
+{% for suite in suites %}
+    {% for feature in suite.features %}
+        {% set suiteId    = loop.parent.loop.index %}
+        {% set featureId  = loop.index %}
+        {% if (feature.background) %}
+            <table class="table table-bordered table-condensed background-table">
+                <tr>
+                    <td aria-expanded="true" suite="{{ suiteId }}" feature="{{ featureId }}" background class="background active" data-toggle="collapse" data-target="[class~=collapse][feature={{ featureId }}][background][suite={{ suiteId }}]">
+                        Background {{ feature.background.title  }}
+                        <span class="glyphicon"></span>
+                    </td>
+
+                </tr>
+                <tr suite="{{ suiteId }}" feature="{{ featureId }}" background class="collapse in" >
+                    <td style="padding-left: 15px;">
+                        <div suite="{{ suiteId }}" feature="{{ featureId }}" background class="collapse in">
+                            <table class="table-condensed table table-hover">
+                                {% for backstep in feature.background.steps %}
+                                    {% set suiteId    = loop.parent.loop.parent.loop.index %}
+                                    {% set featureId  = loop.parent.loop.index %}
+                                    {% set backId     = loop.index %}
+                                    {% set itbackId   = suiteId ~ featureId ~ backId %}
+                                    <tr>
+                                        <td class="collapse in" data-toggle="collapse" data-target="[exception={{ itbackId }}]">
+                                            {{ backstep.text|replace({
+                                                '<': '<span class="parameters">',
+                                                '>': '</span>',
+                                                '_': ' ',
+                                                'Given': '<span class="step_type">Given</span>',
+                                                'When': '<span class="step_type">When</span>',
+                                                'Then': '<span class="step_type">Then</span>',
+                                                'And': '<span class="step_type">And</span>',
+                                                'But': '<span class="step_type">But</span>',
+                                            })|raw }}
+                                            {{ helper.soloProgressBar(backstep.result) }}
+
+                                            {% if backstep.exception %}
+                                                {{ helper.exception_show_details(backstep.exception, itbackId) }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+        <table class="table table-condensed table-hover">
+            <thead></thead>
+            <tbody>
+                {% for scenario in feature.scenarios %}
+                    {% set suiteId    = loop.parent.loop.parent.loop.index %}
+                    {% set featureId  = loop.parent.loop.index %}
+                    {% set scenarioId = loop.index %}
+
+                    {% for step in scenario.steps %}
+
+                        {% set featureId  = loop.parent.loop.parent.loop.index %}
+                        {% set scenarioId = loop.parent.loop.index %}
+                        {% set stepId     = loop.index %}
+                        {% set itId       = suiteId ~ featureId ~ scenarioId ~ stepId %}
+
+                        <tr>
+                            <td suite="{{ suiteId }}" feature="{{ featureId }}" scenario="{{ scenarioId }}" step="{{ stepId }}" class="hidden step" {% if step.exception %} exception data-toggle="collapse" data-target="[exception={{ itId }}]" {% endif %} >
+                                {{ step.text|replace({
+                                    '<': '<span class="parameters">',
+                                    '>': '</span>',
+                                    '_': ' ',
+                                    'Given': '<span class="step_type">Given</span>',
+                                    'When': '<span class="step_type">When</span>',
+                                    'Then': '<span class="step_type">Then</span>',
+                                    'And': '<span class="step_type">And</span>',
+                                    'But': '<span class="step_type">But</span>',
+                                })|raw }}
+                                {% if step.result != '-1' %}
+                                    {{ helper.soloProgressBar(step.result) }}
+                                {% endif  %}
+
+                                {% for argument in step.arguments %}
+                                    {% if argument.text %}<pre class="stepargument"><code>{{ argument.text }}</code></pre>{% endif %}
+                                            {% if argument.table %}
+                                        <div class="panel panel-default stepargument"><div class="panel-body">
+                                                <table class="table table-condensed table-hover">
+                                                    {% for row in argument.table %}
+                                                        <tr>
+                                                            {% for col in row %}
+                                                                {% if loop.parent.loop.first %}<th>{% else %}<td>{% endif %}
+                                                                    {{ col }}
+                                                                    {% if loop.parent.loop.first %}</th>{% else %}</td>{% endif %}
+                                                                {% endfor %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div></div>
+                                        {% endif %}
+
+                                {% endfor %}
+
+                                {% if step.exception %}
+                                    {{ helper.exception_show_details(step.exception, itId) }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if scenario.examples %}
+                        <tr>
+                            <td suite="{{ suiteId }}" feature="{{ featureId }}" scenario="{{ scenarioId }}" example class="example hidden">
+                                <table class="table table-condensed table-hover">
+                                    <tr>
+                                        {% for parameter in scenario.parameters %}
+                                            <th>{{ parameter|replace({
+                                        '<': '<span class="parameters">',
+                                        '>': '</span>',
+                                        '_': ' ',
+                                        'Given': '<span class="step_type">Given</span>',
+                                        'When': '<span class="step_type">When</span>',
+                                        'Then': '<span class="step_type">Then</span>',
+                                        'And': '<span class="step_type">And</span>',
+                                        'But': '<span class="step_type">But</span>',
+                                    })|capitalize }}
+                                            </th>{% endfor %}
+                                        </tr>
+                                        {% for example_result in scenario.examples %}
+
+                                            {% set suiteId    = loop.parent.loop.parent.loop.parent.loop.index %}
+                                            {% set featureId  = loop.parent.loop.parent.loop.index %}
+                                            {% set scenarioId = loop.parent.loop.index %}
+                                            {% set exId       = loop.index %}
+                                            {% set exitId     = suiteId ~ featureId ~ scenarioId ~ exId %}
+                                            <tr>
+                                                {% for col in example_result.parameters %}<td>{{ col }}</td>{% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" suite="{{ suiteId }}" feature="{{ featureId }}" scenario="{{ scenarioId }}" example="{{ exId }}" class="hidden step accordion-toggle"  {% if example_result.exception %} exception data-toggle="collapse" data-target="[exception={{ exitId }}]" {% endif %}>
+                                                    {{ helper.soloProgressBar(example_result.result) }}
+                                                </td>
+                                            </tr>
+                                            {% if example_result.exception %}
+                                                <tr>
+                                                    <td colspan="2">
+                                                        {{ helper.exception_show_details(example_result.exception, exitId) }}
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endif %}
+                                {% endfor %}
+                                    {% endfor %}
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>

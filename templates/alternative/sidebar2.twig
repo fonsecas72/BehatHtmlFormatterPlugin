@@ -1,0 +1,31 @@
+<table class="table table-bordered table-condensed table-hover">
+    <thead></thead>
+    <tbody>
+        {% for suite in suites %}
+            {% for feature in suite.features %}
+                {% for scenario in feature.scenarios %}
+
+                    {% set suiteId    = loop.parent.loop.parent.loop.index %}
+                    {% set featureId  = loop.parent.loop.index %}
+                    {% set scenarioId = loop.index %}
+                    {% set itId       = suiteId ~ featureId ~ scenarioId %}
+                    {% set step_results = scenario.getStepsResults()  %}
+
+                    <tr>
+                        <td suite="{{ suiteId }}" feature="{{ featureId }}" scenario="{{ scenarioId }}" class="hidden scenario accordion-toggle">
+                            {{ helper.show_state_icon(step_results) }}
+                            {{ scenario.name }}
+
+                            <div class="progress" >
+                                <div class="progress-bar progress-bar-success" style="width:{{ scenario.getPercentPassed }}%"><span class="sr-only"></span></div>
+                                <div class="progress-bar progress-bar-warning progress-bar-striped"  style="width:{{ scenario.getPercentPending + scenario.getPercentSkipped }}%"><span class="sr-only"></span></div>
+                                <div class="progress-bar progress-bar-danger"  style="width:{{ scenario.getPercentFailed }}%"><span class="sr-only"></span></div>
+                            </div>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

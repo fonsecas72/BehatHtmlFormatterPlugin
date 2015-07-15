@@ -154,4 +154,51 @@ class Scenario
         //behat
         return $this->loopCount > 0 ? sizeof($this->steps)/$this->loopCount : sizeof($this->steps);
     }
+
+    public function getPercentPassed()
+    {
+        $passedTests = 0;
+        foreach($this->getSteps() as $step) {
+            if ($step->isPassed()) {
+                $passedTests++;
+            }
+        }
+
+        return ($passedTests / (count($this->getSteps()))) * 100;
+    }
+
+    public function getPercentFailed()
+    {
+         $failingTests = 0;
+        foreach($this->getSteps() as $step) {
+            if ($step->isFailed()) {
+                $failingTests++;
+            }
+        }
+
+        return ($failingTests / (count($this->getSteps()))) * 100;
+    }
+
+    public function getPercentSkipped()
+    {
+         $SkippedTests = 0;
+        foreach($this->getSteps() as $step) {
+            if ($step->isSkipped()) {
+                $SkippedTests++;
+            }
+        }
+
+        return ($SkippedTests / (count($this->getSteps()))) * 100;
+    }
+    public function getPercentPending()
+    {
+         $pendingTests = 0;
+        foreach($this->getSteps() as $step) {
+            if ($step->isPending()) {
+                $pendingTests++;
+            }
+        }
+
+        return ($pendingTests / (count($this->getSteps()))) * 100;
+    }
 }
